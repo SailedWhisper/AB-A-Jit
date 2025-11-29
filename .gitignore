@@ -1,0 +1,17 @@
+# Enviroment variables
+*.env
+
+# Bot config files
+config.json
+
+# Log files
+.log
+
+# Auto generated files
+.tmp
+.pyc
+.class
+__pycache__/
+
+# IDE
+.vscode/
