@@ -1,8 +1,8 @@
 # Enviroment variables
 *.env
 
-# Bot config files
-config.json
+# Data folder
+data/
 
 # Log files
 .log
