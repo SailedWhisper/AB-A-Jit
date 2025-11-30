@@ -40,8 +40,6 @@ class ChannelLog():
 
                     if isinstance(log_channel, discord.TextChannel):
                         await log_channel.send(embed = self.Embed)
-                    #else:
-                        #raise TypeError(f"Log channel {log_channel} is not a TextChannel.")
 
             file.close()
 

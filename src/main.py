@@ -49,6 +49,7 @@ class CommandTree(discord.app_commands.CommandTree):
             Check for valid permission before running a command
             If passed, the rest is done by the native handler.
         """
+
         with open(os.environ["CONFIG_PATH"], "r", encoding = "UTF-8") as file:
             json_data = json.load(file)
 
@@ -71,7 +72,7 @@ class CommandTree(discord.app_commands.CommandTree):
         return await super().interaction_check(ctx)
 
 if __name__ == "__main__":
-    os.environ["CONFIG_PATH"] = str(Path("data", "config.json").resolve())
+    os.environ["CONFIG_PATH"] = os.path.join("data", "config.json")
     bot_client = commands.Bot("jitnew", intents = discord.Intents.all(), tree_cls = CommandTree)
     dotenv.load_dotenv()
 
@@ -105,7 +106,7 @@ if __name__ == "__main__":
         ## Loads all commands automatically
         for commandFile in Path("src", "commands").glob("*.py"):
           if commandFile.name != "__init__.py":
-            await bot_client.load_extension(f'commands.{commandFile.name[:-3]}')
+            await bot_client.load_extension(f'src.commands.{commandFile.name[:-3]}')
             logger_instance.debug(f"Module {commandFile.name} loaded successfully")
 
         logger_instance.info("Synchronizing with Discord servers.")

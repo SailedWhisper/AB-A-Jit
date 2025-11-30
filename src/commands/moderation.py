@@ -1,7 +1,7 @@
 from discord import Interaction, app_commands as app_cmds, Embed, Colour
 from discord.ext.commands import Cog, Bot
-from libraries import game, utils
-from libraries.user import User as NewUser
+from src.libraries import game, utils
+from src.libraries.user import User as NewUser
 
 @app_cmds.guild_only()
 class GameModeration(Cog):

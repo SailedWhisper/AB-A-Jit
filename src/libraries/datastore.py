@@ -1,5 +1,5 @@
 import json
-from libraries import utils
+from src.libraries import utils
 
 class DataStoreEntry:
     def __init__(self, entry_url: str) -> None:

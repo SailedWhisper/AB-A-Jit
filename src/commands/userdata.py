@@ -1,7 +1,7 @@
 from discord import Interaction, app_commands as app_cmds, Embed
 from discord.ext.commands import GroupCog, Bot
-from libraries.user import User, get_userid
-from libraries import utils
+from src.libraries.user import User, get_userid
+from src.libraries import utils
 
 @app_cmds.guild_only()
 class UserCommands(GroupCog, name = "user", description = "Common related to specific user queries."):

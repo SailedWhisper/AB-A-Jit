@@ -1,6 +1,6 @@
 from discord import Interaction, app_commands as app_cmds 
 from discord.ext.commands import Cog, Bot
-from libraries import utils
+from src.libraries import utils
 
 @app_cmds.guild_only()
 class Debug(Cog):
