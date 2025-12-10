@@ -66,15 +66,32 @@ class CommandTree(discord.app_commands.CommandTree):
                 ))
 
                 return False
-            
-            file.close()
 
         return await super().interaction_check(ctx)
 
 if __name__ == "__main__":
-    os.environ["CONFIG_PATH"] = os.path.join("data", "config.json")
     bot_client = commands.Bot("jitnew", intents = discord.Intents.all(), tree_cls = CommandTree)
+    os.environ["CONFIG_PATH"] = os.path.join("data", "config.json")
     dotenv.load_dotenv()
+
+    ## Colored logging for better visualization
+    log_streamhandler = colorlog.StreamHandler()
+    log_streamhandler.setFormatter(colorlog.ColoredFormatter(
+        "%(black)s%(asctime)s %(log_color)s%(levelname)-8s %(white)s%(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        style = "%",
+        log_colors={
+            'DEBUG': 'cyan',
+            'INFO': 'green',
+            'WARNING': 'yellow',
+            'ERROR': 'red',
+            'CRITICAL': 'bold_red',
+        }
+    ))
+
+    logger_instance = colorlog.getLogger()
+    logger_instance.addHandler(log_streamhandler)
+    logger_instance.setLevel(10)
 
     @bot_client.event
     async def on_ready():
@@ -82,25 +99,6 @@ if __name__ == "__main__":
             In charge of synchronizing commands with the server & clients
             Also handles stuff like the bot's activity and etc.
         """
-
-        ## Colored logging for better visualization
-        log_streamhandler = colorlog.StreamHandler()
-        log_streamhandler.setFormatter(colorlog.ColoredFormatter(
-            "%(black)s%(asctime)s %(log_color)s%(levelname)-8s %(white)s%(message)s",
-            datefmt="%Y-%m-%d %H:%M:%S",
-            style = "%",
-            log_colors={
-                'DEBUG': 'cyan',
-                'INFO': 'green',
-                'WARNING': 'yellow',
-                'ERROR': 'red',
-                'CRITICAL': 'bold_red',
-            }
-        ))
-
-        logger_instance = colorlog.getLogger()
-        logger_instance.addHandler(log_streamhandler)
-        logger_instance.setLevel(10)
         logger_instance.info("Initializing command modules..\n")
         
         ## Loads all commands automatically
