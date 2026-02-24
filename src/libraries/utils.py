@@ -20,7 +20,7 @@ class ChannelLog():
         self.ctx = ctx
         self.action = action
         self.reason = reason
-        self.expires = to_timestamp(expires) if expires is not None else "Never"
+        self.expires = expires.timestamp() if expires is not None else "Never"
         
         ### Log-related stuff
         self.Embed = discord.Embed(
@@ -45,10 +45,14 @@ class ChannelLog():
 
 def assert_request(response: requests.Response):
     if response.status_code != 200:
-        raise requests.HTTPError(f"{response.status_code} | {json.dumps(response.json())}")
+        raise requests.exceptions.HTTPError(
+            f"{response.status_code} | {json.dumps(response.json())}",
+            request = response.request,
+            response = response
+        )
 
     return response
 
-def to_timestamp(datetime: datetime) -> str:
+def to_timestamp(posix_seconds: int | float) -> str:
     """Returns a dynamic discord timestamp string"""
-    return f'<t:{int(datetime.timestamp())}:f>'
+    return f'<t:{int(posix_seconds)}:f>'
