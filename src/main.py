@@ -22,8 +22,8 @@ class CommandTree(discord.app_commands.CommandTree):
         """
 
         if isinstance(error, discord.app_commands.CommandInvokeError):
-            match error.original:
-                case requests.HTTPError:
+            match type(error.original):
+                case requests.exceptions.HTTPError:
                     if not ctx.response.is_done():
                         await ctx.response.send_message(
                             delete_after = 10,
@@ -39,10 +39,10 @@ class CommandTree(discord.app_commands.CommandTree):
                                 colour = discord.Colour.dark_red()
                             ), text = "Consider checking Discord and Roblox's site status")
                         )
-                case _:
-                    return await super().on_error(ctx, error)
-        else:
-            return await super().on_error(ctx, error)
+
+                    return ## No need to log into the console
+
+        return await super().on_error(ctx, error)
     
     async def interaction_check(self, ctx: discord.Interaction) -> bool:
         """
