@@ -2,13 +2,17 @@ import json
 from src.libraries import utils
 
 class DataStoreEntry:
+    """
+        DataType that corresponds to a DataStore entry, 
+    """
+
     def __init__(self, entry_url: str) -> None:
         entry_data = utils.assert_request(utils.requests.get(
             url = entry_url,
             headers = utils.APIs.rbx_header
         )).json()
 
-        self.value = json.load((entry_data['value']))
+        self.value = entry_data['value']
         self.revision_id = entry_data['revisionId']
         self.create_time = utils.datetime.fromisoformat(entry_data['createTime'])
         self.revision_create_time = utils.datetime.fromisoformat(entry_data['revisionCreateTime'])
