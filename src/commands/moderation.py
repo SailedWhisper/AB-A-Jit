@@ -42,7 +42,7 @@ class GameModeration(Cog):
             log_embed.add_field(name = "User ID:", value = user_info.userid, inline = True)
             log_embed.add_field(
                 name = "Expires:",
-                value = utils.to_timestamp(expire_date) if duration > 0 else "Never.",
+                value = utils.to_timestamp(expire_date.timestamp()) if duration > 0 else "Never.",
                 inline = True
             )
 
