@@ -1,9 +1,13 @@
+from collections import namedtuple
 from src.libraries import utils
 from typing import List
 
-class JoinRestriction:
-    zero_delta = utils.timedelta(0)
+ActiveRestriction = namedtuple("ActiveRestriction", [
+    "active", "startTime", "duration", "privateReason", "displayReason",
+    "excludeAltAccounts", "inherited"
+], defaults = [False, None, None, "", "", False, False])
 
+class JoinRestriction:
     def __init__(self,
                  userid: int,
                  public_reason: str,
@@ -38,20 +42,14 @@ class JoinRestriction:
   
         return True
 
-def ban_status(user_id: int) -> JoinRestriction:
+def ban_status(user_id: int) -> ActiveRestriction:
     restriction_info: dict = utils.assert_request(utils.requests.get(
         url = f'{utils.APIs.universe_url}/user-restrictions/{user_id}',
         headers = utils.APIs.rbx_header
     )).json().get('gameJoinRestriction', {})
 
-    return JoinRestriction(
-        userid = user_id,
-        public_reason = restriction_info.get('displayReason', "<No reason available>"),
-        private_reason = restriction_info.get("privateReason", "<No reason available>"),
-        exclude_alts = restriction_info.get("excludeAltAccounts", False),
-        duration = restriction_info.get("duration", -1),
-        active = restriction_info.get("active", False)
-    )
+    return ActiveRestriction(**restriction_info)
+
 
 def kick(userids: List[int], reason: str) -> bool:
     utils.assert_request(utils.requests.post(

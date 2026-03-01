@@ -1,7 +1,8 @@
-from discord import Interaction, app_commands as app_cmds, Embed, Colour
+from discord import Interaction, app_commands as app_cmds, Embed, Colour, ui
 from discord.ext.commands import Cog, Bot
 from src.libraries import game, utils
-from src.libraries.user import User as NewUser
+from src.libraries.user import User as NewUser, UserCardComponent
+
 
 @app_cmds.guild_only()
 class GameModeration(Cog):
@@ -113,6 +114,53 @@ class GameModeration(Cog):
             await ctx.response.send_message(embed = info_embed)
             await utils.ChannelLog(ctx, f"Kicked user {user_info.title_str()}", reason).send()
 
+    @app_cmds.command()
+    async def banstatus(self, ctx: Interaction, user: str):
+        """
+            Returns the current ban status of the user.
+
+            Args:
+            user (str): The user to unban.
+        """
+
+        user_info = NewUser(user)
+        status = game.ban_status(user_info.userid)
+        card_component = UserCardComponent(timeout = 180, info = user_info)
+        card_component.container.add_item(ui.Separator())
+        
+        if status.active:
+            issued = utils.datetime.fromisoformat(status.startTime).timestamp()
+            contents = [
+                f'**Issued:** {utils.to_timestamp(issued)}',
+                f'**Effective Until:** {utils.to_timestamp(issued + status.duration) if status.duration else "Forever."}',
+                f'**Reason:** {status.displayReason}'
+            ]
+
+            card_component.container.add_item(ui.TextDisplay("\n".join(contents).strip()))
+        else:
+            card_component.container.add_item(ui.TextDisplay("User does not have any active restrictions."))
+
+        card_component.container.add_item(ui.Separator())
+        card_component.container.add_item(ui.TextDisplay(
+            f"-# {utils.to_timestamp(utils.datetime.now().timestamp())} • ID {user_info.userid}"
+        ))
+
+        #info_embed.set_thumbnail(url = user_info.thumbnail())
+        #info_embed.set_footer(text = f'User ID: {user_info.userid}')
+        #info_embed.add_field(name = "Banned:", value = status.active, inline = True)
+        #
+        #if status.active: ## User is banend
+        #    issued = utils.datetime.fromisoformat(status.startTime).timestamp()
+        #    info_embed.add_field(name = "Issued:", value = utils.to_timestamp(issued), inline = True)
+        #    info_embed.add_field(
+        #        name = "Duration:",
+        #        value = f"Until {utils.to_timestamp(issued + status.duration)}" if status.duration else "Permanent" ,
+        #        inline = False
+        #    )
+        #
+        #    info_embed.add_field(name = "Reason:", value = status.displayReason, inline = True)
+
+        await ctx.response.send_message(view = card_component)
 
 ### Initializes all commands from the Cog
 async def setup(bot_client: Bot):

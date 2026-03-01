@@ -1,3 +1,4 @@
+from discord import ui
 from src.libraries import utils
 
 class User():
@@ -16,7 +17,12 @@ class User():
         self.profile_url = f"https://www.roblox.com/users/{self.userid}/profile"
 
     def thumbnail(self) -> str:
-        return ""
+        response = utils.assert_request(utils.requests.get(
+            url = f"https://apis.roblox.com/cloud/v2/users/{self.userid}:generateThumbnail?shape=SQUARE",
+            headers = utils.APIs.rbx_header
+        )).json()
+
+        return response['response']['imageUri']
 
     def title_str(self):
         return f"[{str(self)}]({self.profile_url})"
@@ -26,6 +32,22 @@ class User():
 
     def __int__(self) -> int:
         return self.userid
+
+class UserCardComponent(ui.LayoutView):
+    def __init__(self, *, timeout: float | None = 180, info: User) -> None:
+        super().__init__(timeout = timeout)
+
+        name_title = f'## [{info.display_name} (@{info.username})]({info.profile_url})'
+
+        self.user_info = info
+        self.container = ui.Container(
+            ui.Section(
+                ui.TextDisplay(name_title + f'\n"*{info.description}*"'),
+                accessory = ui.Thumbnail(info.thumbnail())
+            )
+        )
+
+        self.add_item(self.container)
 
 def get_userid(name: str | int) -> int:
     if str(name).isnumeric():

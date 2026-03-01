@@ -77,6 +77,7 @@ class UserCommands(GroupCog, name = "user", description = "Common related to spe
            description = f'**About:** {user_data.description}'
         )
 
+        info_embed.set_thumbnail(url = user_data.thumbnail())
         info_embed.add_field(name = "User ID:", value = user_data.userid)
         info_embed.add_field(name = "Created:", value = utils.to_timestamp(user_data.created.timestamp()))
 

@@ -4,6 +4,15 @@ import requests
 import json
 from datetime import datetime, timedelta
 
+class StandardInfoView(discord.ui.LayoutView):
+    def __init__(self, title: str) -> None:
+        super().__init__(timeout = None)
+        self.container = discord.ui.Container()
+        self.title = discord.ui.TextDisplay(f"## {title}")
+
+        self.container.add_item(self.title)
+        self.add_item(self.container)
+
 class APIs():
     ## Old APIs / Sites
     base_url = "https://apis.roblox.com"
