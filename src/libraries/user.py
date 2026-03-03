@@ -33,9 +33,6 @@ class User():
     def __int__(self) -> int:
         return self.userid
 
-def format_username_display(user: User) -> str:
-    return f'[{user.display_name} (@{user.username})]({user.profile_url})'
-
 def get_userid(name: str | int) -> int:
     if str(name).isnumeric():
         return int(name)

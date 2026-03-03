@@ -1,3 +1,4 @@
+import tempfile
 from discord import Interaction, app_commands as app_cmds, Embed, Colour, ui
 from discord.ext.commands import Cog, Bot
 from src.libraries import game, utils
@@ -55,6 +56,11 @@ class GameModeration(Cog):
                 reason = reason,
                 expires = expire_date if duration > 0 else None
             ).send()
+
+    @app_cmds.command()
+    @app_cmds.check(utils.has_mass_access)
+    async def massban(self, ctx: Interaction, userids: str, reason: str, duration: int = 0):
+        pass
 
     @app_cmds.command()
     async def unban(self, ctx: Interaction, user: str, reason: str):
@@ -134,11 +140,9 @@ class GameModeration(Cog):
         if status.active:
             issued = utils.datetime.fromisoformat(status.startTime).timestamp()
             contents = [
-                ""
                 f'**Issued:** {utils.to_timestamp(issued)}',
                 f'**Expires:** {utils.to_timestamp(issued + status.duration) if status.duration else "Never."}',
                 f'**Reason:** {status.displayReason}'
-                ""
             ]
 
             card_component.section(["\n".join(contents).strip()])
@@ -151,6 +155,7 @@ class GameModeration(Cog):
         ])
     
         await ctx.response.send_message(view = card_component)
+
 
 ### Initializes all commands from the Cog
 async def setup(bot_client: Bot):
