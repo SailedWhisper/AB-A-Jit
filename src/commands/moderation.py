@@ -1,4 +1,3 @@
-import tempfile
 from discord import Interaction, app_commands as app_cmds, Embed, Colour, ui
 from discord.ext.commands import Cog, Bot
 from src.libraries import game, utils
@@ -33,34 +32,22 @@ class GameModeration(Cog):
         )
 
         if restriction.post():
-            expire_date = utils.datetime.now() + restriction.duration
-            log_embed = Embed(
-                title = "User Banned",
-                colour = Colour.dark_red(),
-                timestamp = utils.datetime.now(),
-                description = f"User **{user_info.title_str()}** has been banned.\n\n"
+            dt_now = utils.datetime.now()
+            expire_date = utils.to_timestamp((dt_now + restriction.duration).timestamp()) if duration > 0 else "Never."
+            component = utils.DisplayCardComponent()
+            component.add_items(
+                ui.TextDisplay(f"## User Successfully banned\nUser **{user_info.title_str()}** has been banned."),
+                ui.Separator(),
+                ui.TextDisplay(utils.format_params(Expires = expire_date, Reason = reason)),
+                ui.TextDisplay(f"-# UserID {user_info.userid} • {utils.to_timestamp(dt_now.timestamp())}")
             )
 
-            log_embed.add_field(name = "User ID:", value = user_info.userid, inline = True)
-            log_embed.add_field(
-                name = "Expires:",
-                value = utils.to_timestamp(expire_date.timestamp()) if duration > 0 else "Never.",
-                inline = True
-            )
-
-            log_embed.add_field(name = "Reason:", value = reason, inline = False)
-
-            await ctx.response.send_message(embed = log_embed)
+            await ctx.response.send_message(view = component)
             await utils.ChannelLog(ctx,
                 action = f"Banned user {user_info.title_str()}",
                 reason = reason,
-                expires = expire_date if duration > 0 else None
+                expires = expire_date
             ).send()
-
-    @app_cmds.command()
-    @app_cmds.check(utils.has_mass_access)
-    async def massban(self, ctx: Interaction, userids: str, reason: str, duration: int = 0):
-        pass
 
     @app_cmds.command()
     async def unban(self, ctx: Interaction, user: str, reason: str):

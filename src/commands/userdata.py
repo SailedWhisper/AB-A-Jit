@@ -65,7 +65,7 @@ class UserCommands(GroupCog, name = "user", description = "Common related to spe
         """
             Fetches available information from the specified user profile
 
-            Args: 
+            Args:
                 user (str): The user to fetch the information from.
         """
 

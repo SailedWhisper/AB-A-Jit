@@ -26,6 +26,10 @@ class DisplayCardComponent(discord.ui.LayoutView):
     def separator(self):
         self.container.add_item(discord.ui.Separator())
 
+    def add_items(self, *items):
+        for item in items:
+            self.container.add_item(item)
+
 class APIs():
     ## Old APIs / Sites
     base_url = "https://apis.roblox.com"
@@ -38,11 +42,11 @@ class APIs():
     rbx_header = {"x-api-key": os.environ["RBX_API_KEY"]} #"insert-future-key-here"}
 
 class ChannelLog():
-    def __init__(self, ctx: discord.Interaction, action: str, reason: str, expires: datetime | None = None) -> None:
+    def __init__(self, ctx: discord.Interaction, action: str, reason: str, expires: str | None = None) -> None:
         self.ctx = ctx
         self.action = action
         self.reason = reason
-        self.expires = expires.timestamp() if expires is not None else "Never"
+        self.expires = expires or to_timestamp(datetime.now().timestamp())
         
         ### Log-related stuff
         self.Embed = discord.Embed(
@@ -79,5 +83,13 @@ def to_timestamp(posix_seconds: int | float) -> str:
     """Returns a dynamic discord timestamp string"""
     return f'<t:{int(posix_seconds)}:f>'
 
-def has_mass_access(ctx: discord.Interaction) -> bool:
-    return False
+async def has_mass_access(ctx: discord.Interaction) -> bool:
+    return True
+
+def format_params(**params) -> str:
+    final_str = ""
+
+    for key, val in params.items():
+        final_str += f"**{key}:** " + str(val) + "\n"
+
+    return final_str.strip()
