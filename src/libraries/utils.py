@@ -4,14 +4,27 @@ import requests
 import json
 from datetime import datetime, timedelta
 
-class StandardInfoView(discord.ui.LayoutView):
-    def __init__(self, title: str) -> None:
-        super().__init__(timeout = None)
-        self.container = discord.ui.Container()
-        self.title = discord.ui.TextDisplay(f"## {title}")
+class DisplayCardComponent(discord.ui.LayoutView):
+    def __init__(self, *, timeout: float | None = 180) -> None:
+        super().__init__(timeout = timeout)
 
-        self.container.add_item(self.title)
+        self.container = discord.ui.Container()
         self.add_item(self.container)
+
+    def section(self, display_texts: list[str], thumbnail: str | None = None):
+        if thumbnail is not None:
+            self.container.add_item(
+                discord.ui.Section(
+                   *display_texts,
+                   accessory = discord.ui.Thumbnail(thumbnail)
+                )
+            )
+        else:
+            for text in display_texts:
+                self.container.add_item(discord.ui.TextDisplay(text)) 
+    
+    def separator(self):
+        self.container.add_item(discord.ui.Separator())
 
 class APIs():
     ## Old APIs / Sites
@@ -65,3 +78,6 @@ def assert_request(response: requests.Response):
 def to_timestamp(posix_seconds: int | float) -> str:
     """Returns a dynamic discord timestamp string"""
     return f'<t:{int(posix_seconds)}:f>'
+
+def has_mass_access(ctx: discord.Interaction) -> bool:
+    return False

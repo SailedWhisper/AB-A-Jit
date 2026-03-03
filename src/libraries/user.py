@@ -33,21 +33,8 @@ class User():
     def __int__(self) -> int:
         return self.userid
 
-class UserCardComponent(ui.LayoutView):
-    def __init__(self, *, timeout: float | None = 180, info: User) -> None:
-        super().__init__(timeout = timeout)
-
-        name_title = f'## [{info.display_name} (@{info.username})]({info.profile_url})'
-
-        self.user_info = info
-        self.container = ui.Container(
-            ui.Section(
-                ui.TextDisplay(name_title + f'\n"*{info.description}*"'),
-                accessory = ui.Thumbnail(info.thumbnail())
-            )
-        )
-
-        self.add_item(self.container)
+def format_username_display(user: User) -> str:
+    return f'[{user.display_name} (@{user.username})]({user.profile_url})'
 
 def get_userid(name: str | int) -> int:
     if str(name).isnumeric():
